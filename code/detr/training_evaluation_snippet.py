@@ -15,7 +15,7 @@ IMG_SIZE = 640
 NUM_CLASSES = 28
 
 # Dataset paths
-BASE_DIR = "path/to/Adas_Project"
+BASE_DIR = Path("./dataset")
 
 TRAIN_IMAGES = os.path.join(BASE_DIR, "dataset/images/train")
 VAL_IMAGES   = os.path.join(BASE_DIR, "dataset/images/val")
