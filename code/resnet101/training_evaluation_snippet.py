@@ -1,73 +1,72 @@
-# Representative ResNet-101 Training and Evaluation Snippet
+# Representative ResNet-101 Faster R-CNN Training and Evaluation Snippet
 # ADAS Object Detection Comparative Benchmark
 
 import os
 import torch
-import torchvision
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection import FasterRCNN
+from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
+from torch.amp import GradScaler, autocast
 
 # Configuration
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-BATCH_SIZE = 16
 EPOCHS = 400
-LR = 1e-4
-IMAGE_SIZE = 512
-NUM_CLASSES = 28
+BATCH_SIZE = 4
+IMAGE_SIZE = 640
+NUM_CLASSES = 2
+LEARNING_RATE = 1e-4
+ACCUMULATION_STEPS = 2
 
 # Dataset paths
 BASE_DIR = "path/to/Adas_Project"
 TRAIN_IMAGES = os.path.join(BASE_DIR, "dataset/images/train")
-VAL_IMAGES = os.path.join(BASE_DIR, "dataset/images/val")
 TRAIN_LABELS = os.path.join(BASE_DIR, "dataset/labels/train")
+VAL_IMAGES = os.path.join(BASE_DIR, "dataset/images/val")
 VAL_LABELS = os.path.join(BASE_DIR, "dataset/labels/val")
 
-# Model
-model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
+# ResNet-101 + FPN backbone
+backbone = resnet_fpn_backbone(
+    "resnet101",
     weights="DEFAULT"
 )
 
-in_features = model.roi_heads.box_predictor.cls_score.in_features
+model = FasterRCNN(
+    backbone,
+    num_classes=NUM_CLASSES
+).to(DEVICE)
 
-model.roi_heads.box_predictor = FastRCNNPredictor(
-    in_features,
-    NUM_CLASSES
-)
-
-model.to(DEVICE)
-
-# Optimizer
+# Optimizer and mixed precision
 optimizer = torch.optim.AdamW(
     model.parameters(),
-    lr=LR
+    lr=LEARNING_RATE
 )
 
-# Mixed precision
-scaler = torch.cuda.amp.GradScaler()
+scaler = GradScaler(device="cuda")
 
 # Training
 for epoch in range(EPOCHS):
 
     model.train()
+    optimizer.zero_grad()
 
-    # Load batch and prepare targets here
-    # images, targets = ...
+    # images, targets = load_training_batch(...)
 
-    # images = [img.to(DEVICE) for img in images]
-    # targets = [{k: v.to(DEVICE) for k, v in t.items()}
-    #            for t in targets]
-
-    # optimizer.zero_grad()
-
-    # with torch.cuda.amp.autocast():
-    #     loss_dict = model(images, targets)
+    # with autocast(device_type="cuda"):
+    #     loss_dict = model(
+    #         [img.to(DEVICE) for img in images],
+    #         [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
+    #     )
     #     loss = sum(loss_dict.values())
 
+    # loss = loss / ACCUMULATION_STEPS
     # scaler.scale(loss).backward()
-    # scaler.step(optimizer)
-    # scaler.update()
 
-# Save model
+    # if (step + 1) % ACCUMULATION_STEPS == 0:
+    #     scaler.step(optimizer)
+    #     scaler.update()
+    #     optimizer.zero_grad()
+
+# Save trained model
 torch.save(
     model.state_dict(),
-    "fasterrcnn_adas.pth"
+    "resnet101_faster_rcnn.pth"
 )
