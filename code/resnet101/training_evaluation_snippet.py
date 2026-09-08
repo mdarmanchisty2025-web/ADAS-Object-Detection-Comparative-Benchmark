@@ -17,7 +17,7 @@ LEARNING_RATE = 1e-4
 ACCUMULATION_STEPS = 2
 
 # Dataset paths
-BASE_DIR = "path/to/Adas_Project"
+BASE_DIR = Path("./dataset")
 TRAIN_IMAGES = os.path.join(BASE_DIR, "dataset/images/train")
 TRAIN_LABELS = os.path.join(BASE_DIR, "dataset/labels/train")
 VAL_IMAGES = os.path.join(BASE_DIR, "dataset/images/val")
