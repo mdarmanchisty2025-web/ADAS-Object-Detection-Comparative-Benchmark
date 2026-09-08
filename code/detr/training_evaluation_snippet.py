@@ -1,8 +1,9 @@
-# Representative DETR Training and Evaluation Snippet
+# Representative DETR Training and Validation Snippet
 # ADAS Object Detection Comparative Benchmark
 
 import os
 import torch
+from torch.utils.data import DataLoader
 from transformers import DetrImageProcessor, DetrForObjectDetection
 
 # Configuration
@@ -16,18 +17,10 @@ NUM_CLASSES = 28
 # Dataset paths
 BASE_DIR = "path/to/Adas_Project"
 
-TRAIN_IMAGES = os.path.join(
-    BASE_DIR, "dataset/images/train"
-)
-VAL_IMAGES = os.path.join(
-    BASE_DIR, "dataset/images/val"
-)
-TRAIN_LABELS = os.path.join(
-    BASE_DIR, "dataset/labels/train"
-)
-VAL_LABELS = os.path.join(
-    BASE_DIR, "dataset/labels/val"
-)
+TRAIN_IMAGES = os.path.join(BASE_DIR, "dataset/images/train")
+VAL_IMAGES   = os.path.join(BASE_DIR, "dataset/images/val")
+TRAIN_LABELS = os.path.join(BASE_DIR, "dataset/labels/train")
+VAL_LABELS   = os.path.join(BASE_DIR, "dataset/labels/val")
 
 # DETR processor
 processor = DetrImageProcessor.from_pretrained(
@@ -49,29 +42,29 @@ optimizer = torch.optim.AdamW(
 
 # Training
 for epoch in range(EPOCHS):
-
     model.train()
 
     # pixel_values, labels = load_training_batch(...)
 
-    # pixel_values = pixel_values.to(DEVICE)
-    # labels = [
-    #     {k: v.to(DEVICE) for k, v in t.items()}
-    #     for t in labels
-    # ]
-
     # outputs = model(
-    #     pixel_values=pixel_values,
+    #     pixel_values=pixel_values.to(DEVICE),
     #     labels=labels
     # )
-
     # loss = outputs.loss
+
     # optimizer.zero_grad()
     # loss.backward()
     # optimizer.step()
 
-# Save model
+# Save trained model
 torch.save(
     model.state_dict(),
     "detr_best_model.pth"
 )
+
+# Validation
+model.eval()
+
+# Validation predictions and evaluation
+# Compute mAP@50, precision, recall and F1-score
+# using the validation partition and IoU = 0.50.
