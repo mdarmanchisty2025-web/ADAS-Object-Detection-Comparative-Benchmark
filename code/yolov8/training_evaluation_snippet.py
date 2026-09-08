@@ -30,7 +30,7 @@ if DEVICE.type == "cuda":
 # Dataset Configuration
 # ---------------------------------------------------------
 
-BASE_DIR = "path/to/Adas_Project"
+BASE_DIR = Path("./dataset")
 
 TRAIN_IMAGES = os.path.join(
     BASE_DIR, "dataset/images/train"
