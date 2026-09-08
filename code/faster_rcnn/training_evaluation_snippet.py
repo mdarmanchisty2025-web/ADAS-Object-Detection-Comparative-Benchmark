@@ -15,7 +15,7 @@ NUM_CLASSES = 28       # 27 classes + background
 LEARNING_RATE = 0.005
 
 # Dataset paths
-BASE_DIR = "path/to/Adas_Project"
+BASE_DIR = Path("./dataset")
 TRAIN_IMAGES = os.path.join(BASE_DIR, "dataset/images/train")
 VAL_IMAGES = os.path.join(BASE_DIR, "dataset/images/val")
 TRAIN_LABELS = os.path.join(BASE_DIR, "dataset/labels/train")
