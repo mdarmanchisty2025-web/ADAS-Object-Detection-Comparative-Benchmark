@@ -15,7 +15,8 @@ from yolov10 import YOLOv10
 # Configuration
 # ---------------------------------------------------------
 
-DATASET_YAML = Path("./dataset.yaml")
+BASE_DIR = Path("./dataset")
+DATASET_YAML = BASE_DIR / "dataset.yaml"
 
 EPOCHS = 400
 BATCH_SIZE = 16
